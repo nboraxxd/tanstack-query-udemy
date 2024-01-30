@@ -1,6 +1,7 @@
-import { Posts } from './Posts'
-import './App.css'
 import { QueryProvider } from '@/lib/react-query/QueryProvider'
+
+import { Posts } from '@/Posts'
+import '@/App.css'
 
 function App() {
   return (
