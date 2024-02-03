@@ -19,6 +19,13 @@ export function Posts() {
     staleTime: 5000,
   })
 
+  const updateMutation = useMutation({
+    mutationFn: updatePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries('posts')
+    },
+  })
+
   const deleteMutation = useMutation({
     mutationFn: deletePost,
     onSuccess: () => {
@@ -50,6 +57,7 @@ export function Posts() {
             className="post-title"
             onClick={() => {
               deleteMutation.reset()
+              updateMutation.reset()
               setSelectedPost(post)
             }}
           >
@@ -67,7 +75,9 @@ export function Posts() {
         </button>
       </div>
       <hr />
-      {selectedPost && <PostDetail post={selectedPost} deleteMutation={deleteMutation} />}
+      {selectedPost && (
+        <PostDetail post={selectedPost} updateMutation={updateMutation} deleteMutation={deleteMutation} />
+      )}
     </>
   )
 }
