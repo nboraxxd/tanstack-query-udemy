@@ -1,24 +1,29 @@
-import { useState } from "react";
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
-import type { Staff } from "@shared/types";
+import type { Staff } from '@shared/types'
 
-import { filterByTreatment } from "../utils";
-
-import { axiosInstance } from "@/axiosInstance";
-import { queryKeys } from "@/react-query/constants";
+import { axiosInstance } from '@/axiosInstance'
+import { filterByTreatment } from '@/components/staff/utils'
+import { queryKeys } from '@/react-query/constants'
 
 // query function for useQuery
-// async function getStaff(): Promise<Staff[]> {
-//   const { data } = await axiosInstance.get('/staff');
-//   return data;
-// }
+async function getStaff() {
+  const { data } = await axiosInstance.get<Promise<Staff[]>>('/staff')
+  return data
+}
 
 export function useStaff() {
   // for filtering staff by treatment
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState('all')
 
   // TODO: get data from server via useQuery
-  const staff: Staff[] = [];
+  const fallback: Staff[] = []
 
-  return { staff, filter, setFilter };
+  const { data = fallback } = useQuery({ queryKey: [queryKeys.staff], queryFn: getStaff })
+
+  // filter staff by treatment
+  const filteredStaff = filter === 'all' ? data : filterByTreatment(data, filter)
+
+  return { staff: filteredStaff, filter, setFilter }
 }

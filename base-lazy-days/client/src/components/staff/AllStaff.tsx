@@ -1,13 +1,13 @@
-import { Box, Heading, HStack, Radio, RadioGroup } from "@chakra-ui/react";
+import { Box, Heading, HStack, Radio, RadioGroup } from '@chakra-ui/react'
 
-import { useTreatments } from "../treatments/hooks/useTreatments";
-import { useStaff } from "./hooks/useStaff";
-import { Staff } from "./Staff";
+import { useTreatments } from '../treatments/hooks/useTreatments'
+import { useStaff } from './hooks/useStaff'
+import { Staff } from './Staff'
 
 export function AllStaff() {
   // replace with data from React Query
-  const { staff, filter, setFilter } = useStaff();
-  const treatments = useTreatments();
+  const { staff, filter, setFilter } = useStaff()
+  const treatments = useTreatments()
 
   return (
     <Box>
@@ -31,5 +31,5 @@ export function AllStaff() {
         </HStack>
       </RadioGroup>
     </Box>
-  );
+  )
 }
