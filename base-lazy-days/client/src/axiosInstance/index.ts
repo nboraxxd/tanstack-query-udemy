@@ -1,10 +1,10 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from 'axios'
 
-import { baseUrl } from "./constants";
+import { baseUrl } from '@/axiosInstance/constants'
 
 export function getJWTHeader(userToken: string): Record<string, string> {
-  return { Authorization: `Bearer ${userToken}` };
+  return { Authorization: `Bearer ${userToken}` }
 }
 
-const config: AxiosRequestConfig = { baseURL: baseUrl };
-export const axiosInstance = axios.create(config);
+const config: AxiosRequestConfig = { baseURL: baseUrl }
+export const axiosInstance = axios.create(config)
