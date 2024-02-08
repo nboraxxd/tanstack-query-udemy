@@ -1,29 +1,15 @@
 import { Box, Checkbox, Grid, Heading, HStack, IconButton } from '@chakra-ui/react'
-import { useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { useEffect } from 'react'
 import { TiArrowLeftThick, TiArrowRightThick } from 'react-icons/ti'
 
 import { DateBox } from '@/components/appointments/DateBox'
-import { getNewMonthYear } from '@/components/appointments/hooks/monthYear'
-import { getAppointments, useAppointments } from '@/components/appointments/hooks/useAppointments'
+import { useAppointments } from '@/components/appointments/hooks/useAppointments'
 import { UserAppointments } from '@/components/user/UserAppointments'
-import { queryKeys } from '@/react-query/constants'
 
 export function Calendar() {
-  const queryClient = useQueryClient()
   const currentDate = dayjs()
 
   const { appointments, monthYear, updateMonthYear, showAll, setShowAll } = useAppointments()
-
-  useEffect(() => {
-    const nextMonth = getNewMonthYear(monthYear, 1)
-
-    queryClient.prefetchQuery({
-      queryKey: [queryKeys.appointments, nextMonth.year, nextMonth.month],
-      queryFn: () => getAppointments(nextMonth.year, nextMonth.month),
-    })
-  }, [monthYear, queryClient])
 
   return (
     <Box>

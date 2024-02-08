@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import type { Staff } from '@shared/types'
 
@@ -20,10 +20,13 @@ export function useStaff() {
   // TODO: get data from server via useQuery
   const fallback: Staff[] = []
 
-  const { data = fallback } = useQuery({ queryKey: [queryKeys.staff], queryFn: getStaff })
+  const selectFn = useCallback((data: Staff[]) => (filter === 'all' ? data : filterByTreatment(data, filter)), [filter])
 
-  // filter staff by treatment
-  const filteredStaff = filter === 'all' ? data : filterByTreatment(data, filter)
+  const { data: staff = fallback } = useQuery({
+    queryKey: [queryKeys.staff],
+    queryFn: getStaff,
+    select: selectFn,
+  })
 
-  return { staff: filteredStaff, filter, setFilter }
+  return { staff, filter, setFilter }
 }

@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { useCallback, useState } from 'react'
+import ms from 'ms'
+import { useCallback, useEffect, useState } from 'react'
 
 import { AppointmentDateMap } from '../types'
 import { getAvailableAppointments } from '../utils'
@@ -9,6 +10,12 @@ import { getMonthYearDetails, getNewMonthYear } from './monthYear'
 import { useLoginData } from '@/auth/AuthContext'
 import { axiosInstance } from '@/axiosInstance'
 import { queryKeys } from '@/react-query/constants'
+
+// for useQuery and prefetchQuery
+const commonOptions: Omit<UseQueryOptions<AppointmentDateMap>, 'queryKey'> = {
+  staleTime: 0,
+  gcTime: ms('5m'),
+}
 
 // for useQuery call
 export async function getAppointments(year: string, month: string): Promise<AppointmentDateMap> {
@@ -61,6 +68,18 @@ export function useAppointments() {
   /** ****************** START 3: useQuery  ***************************** */
   // useQuery call for appointments for the current monthYear
 
+  // prefetch next month when monthYear changes
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    const nextMonthYear = getNewMonthYear(monthYear, 1)
+
+    queryClient.prefetchQuery({
+      queryKey: [queryKeys.appointments, nextMonthYear.year, nextMonthYear.month],
+      queryFn: () => getAppointments(nextMonthYear.year, nextMonthYear.month),
+      ...commonOptions,
+    })
+  }, [monthYear, queryClient])
+
   // Notes:
   //    1. appointments is an AppointmentDateMap (object with days of month
   //       as properties, and arrays of appointments for that day as values)
@@ -73,6 +92,8 @@ export function useAppointments() {
     queryKey: [queryKeys.appointments, monthYear.year, monthYear.month],
     queryFn: () => getAppointments(monthYear.year, monthYear.month),
     select: (data) => selectFn(data, showAll),
+    refetchInterval: ms('1m'),
+    ...commonOptions,
   })
 
   /** ****************** END 3: useQuery  ******************************* */
